@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Traffic Mini App</title>
+  <style>
+    body {
+      background-color: #0f0f0f;
+      color: #FFFFFF;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica Neue, Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      padding: 16px;
+      text-align: center;
+      font-size: 20px;
+      font-weight: bold;
+      position: relative;
+    }
+
+    .language-switcher {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: none;
+      border: none;
+      color: #777;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+    }
+
+    .language-switcher img {
+      width: 20px;
+      height: 20px;
+    }
+
+    .language-menu {
+      display: none;
+      position: absolute;
+      top: 30px;
+      right: 0;
+      background: #191919;
+      border-radius: 8px;
+      padding: 8px;
+      z-index: 100;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    }
+
+    .language-menu.show {
+      display: block;
+    }
+
+    .language-option {
+      padding: 8px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .language-option:hover {
+      background: #313131;
+    }
+
+    .language-flag {
+      width: 16px;
+      height: 16px;
+    }
+
+    main {
+      padding: 16px;
+      padding-bottom: 80px;
+      max-width: 480px;
+      margin: 0 auto;
+      margin-top: -10px;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .task {
+      background: #191919;
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .task-info {
+      flex: 1;
+      margin-right: 12px;
+    }
+
+    .task a {
+      color: #ffffff;
+      text-decoration: none;
+      word-break: break-all;
+    }
+
+    .mini-btn {
+      background-color: #313131;
+      color: #FFFFFF;
+      border: none;
+      border-radius: 12px;
+      padding: 10px 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    input, button.submit {
+      width: 100%;
+      margin-top: 12px;
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+
+    button.submit {
+      background-color: #191919;
+      color: #FFFFFF;
+      border: none;
+      font-weight: bold;
+    }
+
+    footer {
+      text-align: center;
+      padding: 16px;
+      color: #aaa;
+      font-size: 14px;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background-color: rgba(15, 15, 15, 0.6);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0;
+      border-top: 1px solid #111;
+      z-index: 10;
+    }
+
+    .nav-item {
+      background: none;
+      border: none;
+      color: #777;
+      font-size: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      flex: 1;
+      cursor: pointer;
+    }
+
+    .nav-item img {
+      width: 24px;
+      height: 24px;
+      opacity: 0.5;
+      transition: opacity 0.3s ease;
+    }
+
+    .nav-item.active {
+      color: #ffffff;
+    }
+
+    .nav-item.active img {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <span id="app-title">Traffic Mini App</span>
+    <div class="language-container">
+      <button class="language-switcher" onclick="toggleLanguageMenu()">
+        <img src="https://img.icons8.com/ios-filled/50/ffffff/globe.png" alt="Language">
+        <span id="current-language">RU</span>
+      </button>
+      <div class="language-menu" id="language-menu">
+        <div class="language-option" onclick="changeLanguage('ru')">
+          <img src="https://flagcdn.com/w20/ru.png" class="language-flag" alt="Russian">
+          Русский
+        </div>
+        <div class="language-option" onclick="changeLanguage('en')">
+          <img src="https://flagcdn.com/w20/gb.png" class="language-flag" alt="English">
+          English
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div style="text-align:center; margin-top: -10px; margin-bottom: 5px;">
+  </div>
+
+  <p style="text-align:center; margin-top: 5px; margin-bottom: 5px;"><strong><img src="https://i.ibb.co/PZZh0QkN/trf.png" alt="Coin" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 6px;"><span id="balance-text">Ваш баланс:</span> <span id="balance">0</span> TRF</strong></p>
+
+  <main>
+    <section id="Tasks" class="tab-content active">
+      <h3 id="tasks-title">Доступные задания</h3>
+      <div id="task-list"></div>
+    </section>
+
+    <section id="Advertise" class="tab-content">
+      <h3 id="create-task-title">Создание задания</h3>
+      <p><strong id="client-balance-text">Баланс заказчика:</strong> <span id="client-balance">0</span> TRF</p>
+      <button class="submit" onclick="topUp()" id="top-up-btn">➕ Пополнить баланс</button>
+
+      <input type="text" id="channel-link" placeholder="Ссылка на ваш канал">
+      <input type="number" id="reward" placeholder="Награда за подписку (TRF)">
+      <button class="submit" onclick="createTask()" id="create-task-btn">📝 Создать задание</button>
+    </section>
+
+    <section id="Wallet" class="tab-content">
+      <h3>🧩 <span id="additional-section-title">Дополнительный раздел</span></h3>
+      <p id="additional-section-text">Здесь будет третий раздел. Можно добавить аналитику, настройки и т.п.</p>
+    </section>
+  </main>
+
+  <footer id="footer-text">&copy; 2025 Traffic Mini App</footer>
+
+  <nav class="bottom-nav">
+    <button class="nav-item active" data-tab="Tasks">
+      <img src="https://i.ibb.co/ZRBC4x4S/traff.png" alt="Tasks">
+      <span id="tasks-tab">Задания</span>
+    </button>
+    <button class="nav-item" data-tab="Advertise">
+      <img src="https://img.icons8.com/ios-filled/50/ffffff/documents.png" alt="Advertise">
+      <span id="order-tab">Заказать</span>
+    </button>
+    <button class="nav-item" data-tab="Wallet">
+      <img src="https://img.icons8.com/ios-filled/50/ffffff/wallet.png">
+      <span id="wallet-tab">Кошелёк</span>
+    </button>
+  </nav>
+
+  <script>
+    // Language data
+    const translations = {
+      en: {
+        appTitle: "Traffic Mini App",
+        balanceText: "Your balance:",
+        tasksTitle: "Available Tasks",
+        createTaskTitle: "Create Task",
+        clientBalanceText: "Customer balance:",
+        topUpBtn: "➕ Top Up Balance",
+        channelLinkPlaceholder: "Your channel link",
+        rewardPlaceholder: "Reward per subscription (TRF)",
+        createTaskBtn: "📝 Create Task",
+        additionalSectionTitle: "Additional Section",
+        additionalSectionText: "This will be the third section. You can add analytics, settings, etc.",
+        tasksTab: "Tasks",
+        orderTab: "Order",
+        walletTab: "Wallet",
+        footerText: "© 2025 Traffic Mini App",
+        completeTask: "Complete",
+        taskCreated: "Task created!",
+        insufficientFunds: "Insufficient funds or data not filled",
+        enterAmount: "Enter top-up amount in TRF:",
+        currentLanguage: "EN"
+      },
+      ru: {
+        appTitle: "Traffic Mini App",
+        balanceText: "Ваш баланс:",
+        tasksTitle: "Доступные задания",
+        createTaskTitle: "Создание задания",
+        clientBalanceText: "Баланс заказчика:",
+        topUpBtn: "➕ Пополнить баланс",
+        channelLinkPlaceholder: "Ссылка на ваш канал",
+        rewardPlaceholder: "Награда за подписку (TRF)",
+        createTaskBtn: "📝 Создать задание",
+        additionalSectionTitle: "Дополнительный раздел",
+        additionalSectionText: "Здесь будет третий раздел. Можно добавить аналитику, настройки и т.п.",
+        tasksTab: "Задания",
+        orderTab: "Заказать",
+        walletTab: "Кошелёк",
+        footerText: "© 2025 Traffic Mini App",
+        completeTask: "Выполнить",
+        taskCreated: "Задание создано!",
+        insufficientFunds: "Недостаточно средств или данные не заполнены",
+        enterAmount: "Введите сумму пополнения в TRF:",
+        currentLanguage: "RU"
+      }
+    };
+
+    let currentLanguage = 'ru'; // Русский язык по умолчанию
+    let userBalance = 0;
+    let clientBalance = 0;
+    const tasks = [
+      { id: 1, link: 'https://t.me/example', reward: 1.5 },
+      { id: 2, link: 'https://t.me/channel123', reward: 2.0 },
+      { id: 3, link: 'https://t.me/dogs_global', reward: 1.2 },
+      { id: 4, link: 'https://t.me/example2', reward: 2.5 },
+      { id: 5, link: 'https://t.me/example3', reward: 3.5 },
+      { id: 6, link: 'https://t.me/example4', reward: 4.5 },
+      { id: 7, link: 'https://t.me/example5', reward: 5.5 },
+    ];
+
+    function toggleLanguageMenu() {
+      const menu = document.getElementById('language-menu');
+      menu.classList.toggle('show');
+    }
+
+    function changeLanguage(lang) {
+      currentLanguage = lang;
+      updateUI();
+      document.getElementById('language-menu').classList.remove('show');
+    }
+
+    function updateUI() {
+      const lang = translations[currentLanguage];
+      
+      // Update all text elements
+      document.getElementById('app-title').textContent = lang.appTitle;
+      document.getElementById('balance-text').textContent = lang.balanceText;
+      document.getElementById('tasks-title').textContent = lang.tasksTitle;
+      document.getElementById('create-task-title').textContent = lang.createTaskTitle;
+      document.getElementById('client-balance-text').textContent = lang.clientBalanceText;
+      document.getElementById('top-up-btn').textContent = lang.topUpBtn;
+      document.getElementById('channel-link').placeholder = lang.channelLinkPlaceholder;
+      document.getElementById('reward').placeholder = lang.rewardPlaceholder;
+      document.getElementById('create-task-btn').textContent = lang.createTaskBtn;
+      document.getElementById('additional-section-title').textContent = lang.additionalSectionTitle;
+      document.getElementById('additional-section-text').textContent = lang.additionalSectionText;
+      document.getElementById('tasks-tab').textContent = lang.tasksTab;
+      document.getElementById('order-tab').textContent = lang.orderTab;
+      document.getElementById('wallet-tab').textContent = lang.walletTab;
+      document.getElementById('footer-text').textContent = lang.footerText;
+      document.getElementById('current-language').textContent = lang.currentLanguage;
+      
+      // Re-render tasks with new language
+      renderTasks();
+    }
+
+    function renderTasks() {
+      const container = document.getElementById('task-list');
+      container.innerHTML = '';
+      tasks.forEach(task => {
+        const el = document.createElement('div');
+        el.className = 'task';
+        el.innerHTML = `
+          <div class="task-info">
+            🗯 <a href="${task.link}" target="_blank">${task.link}</a><br>
+            💵 ${task.reward} TRF
+          </div>
+          <button class="mini-btn" onclick="completeTask(${task.id})">${translations[currentLanguage].completeTask}</button>
+        `;
+        container.appendChild(el);
+      });
+    }
+
+    function completeTask(id) {
+      const taskIndex = tasks.findIndex(t => t.id === id);
+      if (taskIndex > -1) {
+        userBalance += tasks[taskIndex].reward;
+        tasks.splice(taskIndex, 1);
+        document.getElementById('balance').innerText = userBalance.toFixed(2);
+        renderTasks();
+        alert(translations[currentLanguage].taskCreated);
+      }
+    }
+
+    function createTask() {
+      const link = document.getElementById('channel-link').value;
+      const reward = parseFloat(document.getElementById('reward').value);
+      if (link && reward && clientBalance >= reward) {
+        tasks.push({ id: Date.now(), link, reward });
+        clientBalance -= reward;
+        document.getElementById('channel-link').value = '';
+        document.getElementById('reward').value = '';
+        document.getElementById('client-balance').innerText = clientBalance.toFixed(2);
+        alert(translations[currentLanguage].taskCreated);
+        renderTasks();
+      } else {
+        alert(translations[currentLanguage].insufficientFunds);
+      }
+    }
+
+    function topUp() {
+      const amount = parseFloat(prompt(translations[currentLanguage].enterAmount));
+      if (!isNaN(amount) && amount > 0) {
+        clientBalance += amount;
+        document.getElementById('client-balance').innerText = clientBalance.toFixed(2);
+      }
+    }
+
+    // Close language menu when clicking outside
+    document.addEventListener('click', function(event) {
+      const languageMenu = document.getElementById('language-menu');
+      const languageSwitcher = document.querySelector('.language-switcher');
+      
+      if (!languageMenu.contains(event.target) && !languageSwitcher.contains(event.target)) {
+        languageMenu.classList.remove('show');
+      }
+    });
+
+    window.onload = () => {
+      // Initialize with Russian language
+      updateUI();
+      renderTasks();
+
+      const navItems = document.querySelectorAll('.nav-item');
+      const tabContents = document.querySelectorAll('.tab-content');
+
+      navItems.forEach(btn => {
+        btn.addEventListener('click', () => {
+          navItems.forEach(b => b.classList.remove('active'));
+          tabContents.forEach(tc => tc.classList.remove('active'));
+
+          btn.classList.add('active');
+          const selectedTab = btn.getAttribute('data-tab');
+          document.getElementById(selectedTab).classList.add('active');
+        });
+      });
+    };
+  </script>
+</body>
+</html>
