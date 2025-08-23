@@ -118,7 +118,7 @@ function applyTranslations() {
   
   const withdrawBtn = document.getElementById('withdraw-btn');
   if (withdrawBtn) {
-    withdrawBtn.innerHTML = `<img src="assets/icons/withdraw-icon.png" alt=""> ${translations.withdraw}`;
+    withdrawBtn.innerHTML = `<img src="assets/icons/trf.png" alt=""> ${translations.withdraw}`;
   }
 
   // Перерисовываем задания с новыми переводами
@@ -220,4 +220,5 @@ window.onload = () => {
   setupEventListeners();
   initWallet();
   loadLanguage(currentLanguage);
+
 };
