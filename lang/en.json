@@ -24,5 +24,17 @@
   "withdraw": "Withdraw TRF",
   "withdrawSuccess": "Withdrawal initiated",
   "walletError": "Wallet connection failed",
-  "withdrawError": "Withdrawal failed"
+  "withdrawError": "Withdrawal failed",
+  "myTasksTitle": "📊 My Tasks",
+  "progressText": "% completed",
+  "subscribersCompleted": "👥 Completed:",
+  "moneySpent": "💰 Spent:",
+  "moneyLeft": "🎯 Left:",
+  "totalBudget": "📊 Budget:",
+  "subscribersLeft": "🔮 Subs left:",
+  "fillAllFields": "Fill all fields",
+  "enterValidBudget": "Enter valid budget",
+  "notEnoughFunds": "Not enough funds",
+  "perSubscription": "/sub",
+  "yourAddress": "Your address:"
 }

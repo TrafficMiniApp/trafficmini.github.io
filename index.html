@@ -32,23 +32,29 @@
   <p class="balance-text">
     <strong>
       <img src="assets/icons/trf.png" alt="Coin" class="coin-icon">
-      <span id="balance-text">Ваш баланс:</span> <span id="balance">0</span> TRF
+      <span id="balance-text">Your balance:</span> <span id="balance">0</span> TRF
     </strong>
   </p>
 
   <main>
     <section id="Tasks" class="tab-content active">
-      <h3 id="tasks-title">Доступные задания</h3>
+      <h3 id="tasks-title">Available Tasks</h3>
       <div id="task-list"></div>
     </section>
 
     <section id="Advertise" class="tab-content">
-      <h3 id="create-task-title">Создание задания</h3>
-      <p><strong id="client-balance-text">Баланс заказчика:</strong> <span id="client-balance">0</span> TRF</p>
-      <button class="submit" onclick="topUp()" id="top-up-btn">➕ Пополнить баланс</button>
+      <h3 id="create-task-title">Create Task</h3>
+      <p><strong id="client-balance-text">Customer balance:</strong> <span id="client-balance">0</span> TRF</p>
+      <button class="submit" onclick="topUp()" id="top-up-btn">➕ Top Up Balance</button>
       <input type="text" id="channel-link" placeholder="Your channel link">
       <input type="number" id="reward" placeholder="Reward per subscription (TRF)">
-      <button class="submit" onclick="createTask()" id="create-task-btn">📝 Создать задание</button>
+      <button class="submit" onclick="createTask()" id="create-task-btn">📝 Create Task</button>
+      
+      <!-- Новый блок для статистики заказчика -->
+      <div id="client-tasks" style="margin-top: 30px; display: none;">
+        <h3>📊 My Tasks</h3>
+        <div id="client-tasks-list"></div>
+      </div>
     </section>
 
     <!-- Обновлённая вкладка Кошелёк -->
@@ -56,42 +62,42 @@
       <div class="wallet-container">
         <!-- Кнопка подключения -->
         <button id="connect-wallet-btn" class="submit">
-          <img src="assets/icons/ton-icon.png" alt=""> Подключить кошелёк
+          <img src="assets/icons/ton-icon.png" alt=""> Connect Wallet
         </button>
         
         <!-- Блок с адресом (изначально скрыт) -->
         <div id="wallet-info" class="hidden">
           <div class="wallet-address">
-            <span class="label">Ваш адрес:</span>
+            <span class="label">Your address:</span>
             <span id="wallet-address" class="address">EQ...1234</span>
           </div>
         </div>
 
         <!-- Кнопка вывода -->
         <button id="withdraw-btn" class="submit" disabled>
-          <img src="assets/icons/trf.png" alt=""> Вывести TRF (мин. 50)
+          <img src="assets/icons/trf.png" alt=""> Withdraw TRF
         </button>
       </div>
     </section>
   </main>
 
-  <footer id="footer-text">&copy; 2025 Traffic Mini App</footer>
+  <footer id="footer-text">© 2025 Traffic Mini App</footer>
 
   <nav class="bottom-nav">
     <button class="nav-item active" data-tab="Tasks">
       <img src="assets/icons/tasks-icon.png" alt="Tasks">
-      <span id="tasks-tab">Задания</span>
+      <span id="tasks-tab">Tasks</span>
     </button>
     <button class="nav-item" data-tab="Advertise">
       <img src="assets/icons/order-icon.png" alt="Advertise">
-      <span id="order-tab">Заказать</span>
+      <span id="order-tab">Order</span>
     </button>
     <button class="nav-item" data-tab="Wallet">
       <img src="assets/icons/wallet-icon.png" alt="Wallet">
-      <span id="wallet-tab">Кошелёк</span>
+      <span id="wallet-tab">Wallet</span>
     </button>
   </nav>
 
-  <script src="js/app.js"></script>
+  <script type="module" src="js/app.js"></script>
 </body>
 </html>
