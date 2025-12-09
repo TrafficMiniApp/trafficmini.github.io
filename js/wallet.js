@@ -32,7 +32,7 @@ async function connectTonWallet() {
     try {
         if (!window.tonConnect) {
             window.tonConnect = new TonConnect({
-                manifestUrl: "https://trafficminiapp.github.io/trafficmini.github.io/tonconnect-manifest.json"
+                manifestUrl: "https://raw.githubusercontent.com/TrafficMiniApp/trafficmini.github.io/main/tonconnect-manifest.json"
             });
         }
 
