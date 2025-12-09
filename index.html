@@ -50,22 +50,18 @@
       <input type="number" id="reward" placeholder="Reward per subscription (TRF)">
       <button class="submit" onclick="createTask()" id="create-task-btn">📝 Create Task</button>
       
-      <!-- Новый блок для статистики заказчика -->
       <div id="client-tasks" style="margin-top: 30px; display: none;">
         <h3>📊 My Tasks</h3>
         <div id="client-tasks-list"></div>
       </div>
     </section>
 
-    <!-- Обновлённая вкладка Кошелёк -->
     <section id="Wallet" class="tab-content">
       <div class="wallet-container">
-        <!-- Кнопка подключения -->
         <button id="connect-wallet-btn" class="submit">
           <img src="assets/icons/ton-icon.png" alt=""> Connect Wallet
         </button>
         
-        <!-- Блок с адресом (изначально скрыт) -->
         <div id="wallet-info" class="hidden">
           <div class="wallet-address">
             <span class="label">Your address:</span>
@@ -73,10 +69,12 @@
           </div>
         </div>
 
-        <!-- Кнопка вывода -->
         <button id="withdraw-btn" class="submit" disabled>
           <img src="assets/icons/trf.png" alt=""> Withdraw TRF
         </button>
+
+        <!-- Кнопка обновления баланса -->
+        <button id="refresh-balance-btn" class="submit">🔄 Refresh Balance</button>
       </div>
     </section>
   </main>
