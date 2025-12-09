@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Traffic Mini App</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header>
+    <span id="app-title">Traffic Mini App</span>
+    <div class="language-container">
+      <button class="language-switcher" onclick="toggleLanguageMenu()">
+        <img src="assets/icons/globe.png" alt="Language">
+        <span id="current-language">EN</span>
+      </button>
+      <div class="language-menu" id="language-menu">
+        <div class="language-option" onclick="changeLanguage('en')">
+          <img src="assets/icons/gb-flag.png" class="language-flag" alt="English">
+          English
+        </div>
+        <div class="language-option" onclick="changeLanguage('ru')">
+          <img src="assets/icons/ru-flag.png" class="language-flag" alt="Russian">
+          Русский
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="balance-container"></div>
+
+  <p class="balance-text">
+    <strong>
+      <img src="assets/icons/trf.png" alt="Coin" class="coin-icon">
+      <span id="balance-text">Your balance:</span> <span id="balance">0</span> TRF
+    </strong>
+  </p>
+
+  <main>
+    <section id="Tasks" class="tab-content active">
+      <h3 id="tasks-title">Available Tasks</h3>
+      <div id="task-list"></div>
+    </section>
+
+    <section id="Advertise" class="tab-content">
+      <h3 id="create-task-title">Create Task</h3>
+      <p><strong id="client-balance-text">Customer balance:</strong> <span id="client-balance">0</span> TRF</p>
+      <button class="submit" onclick="topUp()" id="top-up-btn">➕ Top Up Balance</button>
+      <input type="text" id="channel-link" placeholder="Your channel link">
+      <input type="number" id="reward" placeholder="Reward per subscription (TRF)">
+      <button class="submit" onclick="createTask()" id="create-task-btn">📝 Create Task</button>
+      
+      <div id="client-tasks" style="margin-top: 30px; display: none;">
+        <h3>📊 My Tasks</h3>
+        <div id="client-tasks-list"></div>
+      </div>
+    </section>
+
+    <section id="Wallet" class="tab-content">
+      <div class="wallet-container">
+        <button id="connect-wallet-btn" class="submit">
+          <img src="assets/icons/ton-icon.png" alt=""> Connect Wallet
+        </button>
+        
+        <div id="wallet-info" class="hidden">
+          <div class="wallet-address">
+            <span class="label">Your address:</span>
+            <span id="wallet-address" class="address">EQ...1234</span>
+          </div>
+        </div>
+
+        <button id="withdraw-btn" class="submit" disabled>
+          <img src="assets/icons/trf.png" alt=""> Withdraw TRF
+        </button>
+
+        <!-- Кнопка обновления баланса -->
+        <button id="refresh-balance-btn" class="submit">🔄 Refresh Balance</button>
+      </div>
+    </section>
+  </main>
+
+  <footer id="footer-text">© 2025 Traffic Mini App</footer>
+
+  <nav class="bottom-nav">
+    <button class="nav-item active" data-tab="Tasks">
+      <img src="assets/icons/tasks-icon.png" alt="Tasks">
+      <span id="tasks-tab">Tasks</span>
+    </button>
+    <button class="nav-item" data-tab="Advertise">
+      <img src="assets/icons/order-icon.png" alt="Advertise">
+      <span id="order-tab">Order</span>
+    </button>
+    <button class="nav-item" data-tab="Wallet">
+      <img src="assets/icons/wallet-icon.png" alt="Wallet">
+      <span id="wallet-tab">Wallet</span>
+    </button>
+  </nav>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
