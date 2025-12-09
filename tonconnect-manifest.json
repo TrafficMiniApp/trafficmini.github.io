@@ -1,5 +1,6 @@
 {
-  "url": "http://localhost:5500",
   "name": "Traffic Mini App",
-  "iconUrl": "http://localhost:5500/assets/icons/trf.png"
+  "icon": "https://your-site.com/assets/icons/ton-icon.png",
+  "version": "1.0",
+  "description": "Mini App для подключения кошелька"
 }
