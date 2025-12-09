@@ -1,12 +1,15 @@
-// wallet.js — локальное подключение тестового кошелька
+// wallet.js — подключение через TonConnect
+import { TonConnect } from "https://cdn.jsdelivr.net/npm/@tonconnect/sdk/dist/tonconnect.umd.min.js";
+
 window.isWalletConnected = false;
 window.walletAddress = '';
 window.userBalance = 0;
+window.tonConnect = null;
 
-// Получение баланса с локального бэкенда
+// Получение баланса через бэкенд Render
 export async function fetchBalanceFromBackend(address) {
     try {
-        const res = await fetch(`https://trafficbackend-vhqy.onrender.com`);
+        const res = await fetch(`https://trafficbackend-vhqy.onrender.com/balance/${address}`);
         const data = await res.json();
         return parseFloat(data.balances.trf);
     } catch (err) {
@@ -20,17 +23,22 @@ export function initWallet() {
     const withdrawBtn = document.getElementById('withdraw-btn');
 
     if (connectBtn && withdrawBtn) {
-        connectBtn.addEventListener('click', connectTestWallet);
+        connectBtn.addEventListener('click', connectTonWallet);
         withdrawBtn.addEventListener('click', withdrawFunds);
     }
 }
 
-async function connectTestWallet() {
+async function connectTonWallet() {
     try {
-        console.log('Подключаем тестовый кошелек...');
+        if (!window.tonConnect) {
+            window.tonConnect = new TonConnect({
+                manifestUrl: "https://trafficmini.github.io/tonconnect-manifest.json" // твой манифест
+            });
+        }
 
-        // Адрес твоего тестового кошелька
-        window.walletAddress = 'EQ_TEST_WALLET_123456789';
+        // Подключение кошелька
+        const session = await window.tonConnect.connect();
+        window.walletAddress = session.account.address;
         window.isWalletConnected = true;
 
         // Показываем адрес в UI
@@ -38,16 +46,16 @@ async function connectTestWallet() {
         document.getElementById('wallet-info').classList.remove('hidden');
         document.getElementById('connect-wallet-btn').style.display = 'none';
 
-        // Подтягиваем баланс через бэкенд
+        // Получаем баланс через бэкенд
         window.userBalance = await fetchBalanceFromBackend(window.walletAddress);
         updateBalanceUI();
 
-        // Добавляем кнопку Refresh Balance, если ещё нет
+        // Добавляем кнопку Refresh Balance
         addRefreshButton();
 
     } catch (err) {
-        console.error('Ошибка подключения тестового кошелька:', err);
-        alert('Не удалось подключить тестовый кошелек');
+        console.error('Ошибка подключения кошелька TonConnect:', err);
+        alert('Не удалось подключить кошелек');
     }
 }
 
