@@ -3,19 +3,16 @@ import { initTasks, completeTask, createTask, renderClientTasks } from './tasks.
 import { loadLanguage, changeLanguage, currentLanguage, getTranslation } from './language.js';
 import { initUI, setupEventListeners } from './ui.js';
 
-// Глобальные переменные
 window.userBalance = 0;
 window.clientBalance = 0;
 
-// Инициализация приложения
 async function initApp() {
     await loadLanguage(currentLanguage);
     initUI();
-    initWallet();
+    initWallet(); // теперь TonConnect
     initTasks();
     setupEventListeners();
 
-    // Сделаем функции глобальными
     window.completeTask = completeTask;
     window.createTask = createTask;
     window.changeLanguage = changeLanguage;
@@ -32,7 +29,6 @@ async function initApp() {
         }
     };
 
-    // Автообновление баланса при открытии вкладки Wallet
     document.querySelectorAll('.nav-item').forEach(btn => {
         btn.addEventListener('click', async () => {
             const tab = btn.dataset.tab;
@@ -45,5 +41,4 @@ async function initApp() {
     });
 }
 
-// Запуск приложения
 window.onload = initApp;
