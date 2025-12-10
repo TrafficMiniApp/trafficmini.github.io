@@ -1,78 +1,93 @@
-// wallet.js — подключение через TonConnect
-import { TonConnect } from "https://cdn.jsdelivr.net/npm/@tonconnect/sdk/dist/tonconnect.umd.min.js";
+let walletAddress = '';
+let isWalletConnected = false;
+let tonConnectUI = null;
 
-window.isWalletConnected = false;
-window.walletAddress = '';
-window.userBalance = 0;
-window.tonConnect = null;
+// Загружаем TonConnect (его создаёт HTML)
+export function initWallet(tc) {
+    tonConnectUI = tc;
 
-// Получение баланса через бэкенд Render
-export async function fetchBalanceFromBackend(address) {
+    tonConnectUI.onStatusChange(async (wallet) => {
+        console.log("Wallet status:", wallet);
+
+        if (wallet && wallet.account) {
+            walletAddress = wallet.account.address;
+            isWalletConnected = true;
+
+            document.getElementById("wallet-info").classList.remove("hidden");
+            document.getElementById("wallet-address").textContent =
+                walletAddress.slice(0, 6) + "..." + walletAddress.slice(-4);
+
+            // Загружаем баланс TRF с бэка
+            window.userBalance = await fetchBalanceFromBackend(walletAddress);
+            updateBalanceUI();
+            addRefreshButton();
+
+        } else {
+            walletAddress = '';
+            isWalletConnected = false;
+
+            document.getElementById("wallet-info").classList.add("hidden");
+            document.getElementById("withdraw-btn").disabled = true;
+        }
+    });
+
+    const withdrawBtn = document.getElementById("withdraw-btn");
+    withdrawBtn.addEventListener("click", withdrawFunds);
+}
+
+
+// --- BACKEND ---
+async function fetchBalanceFromBackend(address) {
     try {
-        const res = await fetch(`https://trafficbackend-vhqy.onrender.com/balance/${address}`);
+        const res = await fetch(`https://your-backend-domain.com/wallet/balance?address=${address}`);
         const data = await res.json();
-        return parseFloat(data.balances.trf);
-    } catch (err) {
-        console.error('Ошибка при получении баланса с бэкенда:', err);
+        return data.result || 0;
+    } catch (e) {
+        console.error("Backend error:", e);
         return 0;
     }
 }
 
-export function initWallet() {
-    const connectBtn = document.getElementById('connect-wallet-btn');
-    const withdrawBtn = document.getElementById('withdraw-btn');
 
-    if (connectBtn && withdrawBtn) {
-        connectBtn.addEventListener('click', connectTonWallet);
-        withdrawBtn.addEventListener('click', withdrawFunds);
-    }
-}
-
-async function connectTonWallet() {
-    try {
-        if (!window.tonConnect) {
-            window.tonConnect = new TonConnect({
-                manifestUrl: "https://trafficminiapp.github.io/trafficmini.github.io/tonconnect-manifest.json"
-            });
-        }
-
-        const session = await window.tonConnect.connect();
-        window.walletAddress = session.account.address;
-        window.isWalletConnected = true;
-
-        document.getElementById('wallet-address').textContent = window.walletAddress;
-        document.getElementById('wallet-info').classList.remove('hidden');
-        document.getElementById('connect-wallet-btn').style.display = 'none';
-
-        window.userBalance = await fetchBalanceFromBackend(window.walletAddress);
-        updateBalanceUI();
-
-    } catch (err) {
-        console.error('Ошибка подключения кошелька TonConnect:', err);
-        alert('Не удалось подключить кошелек');
-    }
-}
-
+// --- WITHDRAW ---
 async function withdrawFunds() {
-    if (!window.isWalletConnected) {
-        alert('Сначала подключите кошелек');
-        return;
-    }
+    if (!isWalletConnected) return alert("Connect wallet first");
 
     if (window.userBalance < 50) {
-        alert('Минимум 50 TRF требуется для вывода');
-        return;
+        return alert("Minimum 50 TRF required");
     }
 
-    alert('Вывод инициирован');
+    alert("Withdrawal request sent!");
     window.userBalance = 0;
     updateBalanceUI();
 }
 
-function updateBalanceUI() {
-    const balanceElement = document.getElementById('balance');
-    const withdrawBtn = document.getElementById('withdraw-btn');
 
+// --- UPDATE UI ---
+function updateBalanceUI() {
+    const balanceElement = document.getElementById("balance");
     if (balanceElement) balanceElement.textContent = window.userBalance.toFixed(2);
-    if (withdrawBtn) withdrawBtn.disabled = window.userBalance < 50;
+
+    document.getElementById("withdraw-btn").disabled = window.userBalance < 50;
+}
+
+
+function addRefreshButton() {
+    const container = document.querySelector(".balance-container");
+    if (!container) return;
+
+    if (document.getElementById("refresh-balance-btn")) return;
+
+    const btn = document.createElement("button");
+    btn.id = "refresh-balance-btn";
+    btn.textContent = "🔄 Refresh";
+    btn.className = "submit";
+
+    container.appendChild(btn);
+
+    btn.addEventListener("click", async () => {
+        if (!walletAddress) return;
+        window.userBalance = await fetchBalanceFromBackend(walletAddress);
+        updateBalanceUI();
+    });
 }
