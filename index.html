@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Traffic Mini App</title>
   <link rel="stylesheet" href="css/style.css">
+  <!-- TonConnect UI SDK -->
   <script src="https://unpkg.com/@tonconnect/ui@2.3.1/dist/tonconnect-ui.min.js"></script>
 </head>
 
@@ -12,16 +13,16 @@
   <header>
     <span id="app-title">Traffic Mini App</span>
     <div class="language-container">
-      <button class="language-switcher" onclick="toggleLanguageMenu()">
+      <button class="language-switcher" id="language-switcher">
         <img src="assets/icons/globe.png" alt="Language">
         <span id="current-language">EN</span>
       </button>
       <div class="language-menu" id="language-menu">
-        <div class="language-option" onclick="changeLanguage('en')">
+        <div class="language-option" data-lang="en">
           <img src="assets/icons/gb-flag.png" class="language-flag" alt="English">
           English
         </div>
-        <div class="language-option" onclick="changeLanguage('ru')">
+        <div class="language-option" data-lang="ru">
           <img src="assets/icons/ru-flag.png" class="language-flag" alt="Russian">
           Русский
         </div>
@@ -47,10 +48,10 @@
     <section id="Advertise" class="tab-content">
       <h3 id="create-task-title">Create Task</h3>
       <p><strong id="client-balance-text">Customer balance:</strong> <span id="client-balance">0</span> TRF</p>
-      <button class="submit" onclick="topUp()" id="top-up-btn">➕ Top Up Balance</button>
+      <button class="submit" id="top-up-btn">➕ Top Up Balance</button>
       <input type="text" id="channel-link" placeholder="Your channel link">
       <input type="number" id="reward" placeholder="Reward per subscription (TRF)">
-      <button class="submit" onclick="createTask()" id="create-task-btn">📝 Create Task</button>
+      <button class="submit" id="create-task-btn">📝 Create Task</button>
 
       <div id="client-tasks" style="margin-top: 30px; display: none;">
         <h3>📊 My Tasks</h3>
@@ -61,7 +62,6 @@
     <!-- Wallet -->
     <section id="Wallet" class="tab-content">
       <div class="wallet-container">
-
         <!-- Button controlled by TonConnect -->
         <button id="connect-wallet-btn" class="submit">
           <img src="assets/icons/ton-icon.png" alt=""> Connect Wallet
@@ -99,34 +99,6 @@
       <span id="wallet-tab">Wallet</span>
     </button>
   </nav>
-
-  <!-- TonConnect Logic -->
-  <script>
-    const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-        manifestUrl: 'https://trafficminiapp.github.io/trafficmini.github.io/tonconnect-manifest.json',
-        buttonRootId: 'connect-wallet-btn'
-    });
-
-    // ДЕЛАЕМ DO WINDOW: app.js получит доступ
-    window.tonConnectUI = tonConnectUI;
-
-    tonConnectUI.onStatusChange(wallet => {
-        console.log("Wallet status:", wallet);
-
-        if (wallet && wallet.account) {
-            document.getElementById("wallet-info").classList.remove("hidden");
-
-            const addr = wallet.account.address;
-            document.getElementById("wallet-address").textContent =
-                addr.slice(0, 6) + "..." + addr.slice(-4);
-
-            document.getElementById("withdraw-btn").disabled = false;
-        } else {
-            document.getElementById("wallet-info").classList.add("hidden");
-            document.getElementById("withdraw-btn").disabled = true;
-        }
-    });
-  </script>
 
   <script type="module" src="js/app.js"></script>
 </body>
