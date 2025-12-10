@@ -1,5 +1,7 @@
 {
-  "url": "https://trafficminiapp.github.io/trafficmini.github.io/",
-  "name": "Traffic Mini App",
-  "iconUrl": "https://trafficminiapp.github.io/trafficmini.github.io/assets/icons/trf.png"
+    "url": "https://trafficminiapp.github.io",
+    "name": "Traffic Mini App",
+    "iconUrl": "https://trafficminiapp.github.io/trafficmini.github.io/assets/icons/trf.png",
+    "termsOfUseUrl": "https://trafficminiapp.github.io/trafficmini.github.io/terms.html",
+    "privacyPolicyUrl": "https://trafficminiapp.github.io/trafficmini.github.io/privacy.html"
 }
