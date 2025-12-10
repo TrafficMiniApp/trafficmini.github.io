@@ -1,6 +1,5 @@
 {
+  "url": "https://trafficminiapp.github.io/trafficmini.github.io/",
   "name": "Traffic Mini App",
-  "icon": "https://your-site.com/assets/icons/ton-icon.png",
-  "version": "1.0",
-  "description": "Mini App для подключения кошелька"
+  "iconUrl": "https://trafficminiapp.github.io/trafficmini.github.io/assets/icons/trf.png"
 }
