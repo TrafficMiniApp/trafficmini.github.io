@@ -129,7 +129,7 @@ export class WalletManager {
         
         try {
             // TODO: Замени на реальный URL твоего бэкенда
-            const response = await fetch(`https://your-backend-domain.com/wallet/balance?address=${this.walletAddress}`);
+            const response = await fetch(`https://trafficbackend-vhqy.onrender.com/wallet/balance?address=${this.walletAddress}`);
             if (!response.ok) throw new Error('Network response was not ok');
             
             const data = await response.json();
