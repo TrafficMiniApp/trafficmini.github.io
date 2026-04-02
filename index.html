@@ -6,10 +6,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Traffic Mini App</title>
   <link rel="stylesheet" href="css/style.css">
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <!-- TonConnect UI SDK -->
   <script src="https://unpkg.com/@tonconnect/ui@2.3.1/dist/tonconnect-ui.min.js"></script>
   <!-- TON Core Library для работы с адресами -->
-  <script src="https://unpkg.com/tonweb/dist/tonweb.js"></script>
+  <script src="https://unpkg.com/@ton/core@0.59.0/dist/index.min.js"></script>
 </head>
 
 <body>
@@ -53,7 +54,10 @@
     <section id="Advertise" class="tab-content">
       <h3 id="create-task-title">Create Task</h3>
       <p><strong id="client-balance-text">Customer balance:</strong> <span id="client-balance">0</span> TRF</p>
-      <button class="submit" id="top-up-btn">➕ Top Up Balance</button>
+      <div style="display: flex; gap: 10px;">
+        <button class="submit" id="top-up-btn" style="margin-top: 0;">➕ Top Up Balance</button>
+        <button class="submit" id="client-withdraw-btn" style="margin-top: 0;" onclick="handleRefund()">💸 Withdraw</button>
+      </div>
       <input type="text" id="channel-link" placeholder="Your channel link">
       <input type="number" id="reward" placeholder="Reward per subscription (TRF)">
       <button class="submit" id="create-task-btn">📝 Create Task</button>
@@ -76,7 +80,7 @@
         <div id="wallet-info" class="hidden">
           <div class="address-container">
             <div class="address-header">
-              <span class="address-label">Your TON Address:</span>
+              <span class="address-label" id="address-label">Your TON Address:</span>
               <span class="copy-btn" id="copy-address-btn" title="Copy address">
                 📋 Copy
               </span>

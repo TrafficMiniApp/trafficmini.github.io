@@ -89,8 +89,6 @@ function setupButtonHandlers() {
         });
     }
 
-    // 🔥 Обработка переключения вкладок для кнопки Refresh
-    setupTabNavigation();
 }
 
 // Функция переключения языкового меню

@@ -1,3 +1,5 @@
+import { getTranslation } from './language.js';
+
 export class WalletManager {
     constructor() {
         this.walletAddress = '';
@@ -58,7 +60,7 @@ export class WalletManager {
                 walletInfo.classList.remove("hidden");
             }
 
-            // 🔥 ПОКАЗЫВАЕМ ТОЛЬКО NON-BOUNCEABLE АДРЕС (как в Tonkeeper)
+            // 🔥 ПОКАЗЫВАЕМ ТОЛЬКО NON-BOUNCEABLE АДРЕС (как в Tonkeeper для отправки)
             this.showNonBounceableAddress();
 
             // Меняем кнопку подключения на "Отключить"
@@ -104,27 +106,33 @@ export class WalletManager {
         try {
             let nonBounceableAddress = '';
 
-            // Используем TonWeb для конвертации
-            if (window.TonWeb) {
-                const address = new TonWeb.utils.Address(this.walletAddress);
-                // toString(isUserFriendly, isUrlSafe, isBounceable, isTestOnly)
-                // isBounceable = false для UQ... адресов
-                nonBounceableAddress = address.toString(true, true, false, false);
+            // Пробуем использовать библиотеку @ton/core если доступна
+            if (typeof window.TonCore !== 'undefined') {
+                try {
+                    const address = window.TonCore.Address.parse(this.walletAddress);
+                    nonBounceableAddress = address.toString({
+                        urlSafe: true,
+                        bounceable: false, // 🔥 ТОЛЬКО NON-BOUNCEABLE
+                        testOnly: false    // mainnet
+                    });
+                } catch (libError) {
+                    console.warn("TON Core library error:", libError);
+                    nonBounceableAddress = this.fallbackToNonBounceable(this.walletAddress);
+                }
             } else {
-                throw new Error("TonWeb library not found");
+                // Fallback если библиотека не загрузилась
+                nonBounceableAddress = this.fallbackToNonBounceable(this.walletAddress);
             }
 
             // Обновляем UI
             const addressElement = document.getElementById("wallet-address");
             if (addressElement) {
-                // Показываем сокращенный адрес для красоты (как в Tonkeeper: UQ...xxxx)
-
-                const short = nonBounceableAddress.slice(0, 4) + '...' + nonBounceableAddress.slice(-4);
-                addressElement.textContent = short;
-                addressElement.setAttribute('title', nonBounceableAddress); // Полный адрес при наведении
+                // Показываем сокращенный адрес: UQ......XXXX
+                const shortAddress = nonBounceableAddress.slice(0, 8) + "..." + nonBounceableAddress.slice(-8);
+                addressElement.textContent = shortAddress;
             }
 
-            // Настраиваем кнопку копирования (копируется ПОЛНЫЙ адрес)
+            // Настраиваем кнопку копирования (копируется полный адрес)
             this.setupCopyButton(nonBounceableAddress);
 
         } catch (error) {
@@ -133,7 +141,87 @@ export class WalletManager {
         }
     }
 
+    // 🔥 Fallback метод для конвертации HEX → Non-Bounceable
+    fallbackToNonBounceable(hexAddress) {
+        try {
+            let workchainId = 0;
+            let hashHex = '';
 
+            // Обработка формата "workchain:hash" (Raw Address, стандарт TonConnect)
+            if (hexAddress.includes(':')) {
+                const parts = hexAddress.split(':');
+                workchainId = parseInt(parts[0], 10);
+                hashHex = parts[1];
+            } else {
+                // Если пришел чистый HEX (редкий случай для connect sdk)
+                let cleanHex = hexAddress.startsWith('0x') ? hexAddress.slice(2) : hexAddress;
+                if (cleanHex.length === 64) {
+                    hashHex = cleanHex; // Предполагаем workchain 0
+                } else {
+                    console.warn("Unexpected address format:", hexAddress);
+                    return hexAddress;
+                }
+            }
+
+            // Проверка валидности хэша
+            if (hashHex.length !== 64) {
+                console.warn("Invalid hash length:", hashHex.length);
+                return hexAddress;
+            }
+
+            // Флаги для non-bounceable адреса (mainnet)
+            // 0x11 = Bounceable Mainnet (EQ)
+            // 0x51 = Non-bounceable Mainnet (UQ)
+            const flags = 0x51;
+
+            // Собираем байты: [flags, workchain, ...hash]
+            const bytes = new Uint8Array(34);
+            bytes[0] = flags;
+            bytes[1] = workchainId & 0xFF; // Корректная запись байта workchain
+
+            // Конвертируем хэш из HEX в байты
+            for (let i = 0; i < 32; i++) {
+                bytes[i + 2] = parseInt(hashHex.slice(i * 2, i * 2 + 2), 16);
+            }
+
+            // Вычисляем CRC16
+            const crc = this.calculateCRC16(bytes.slice(0, 34));
+
+            // Добавляем CRC в конец
+            const fullBytes = new Uint8Array(36);
+            fullBytes.set(bytes);
+            fullBytes[34] = (crc >> 8) & 0xFF;
+            fullBytes[35] = crc & 0xFF;
+
+            // Конвертируем в base64 (URL-safe)
+            let binary = '';
+            for (let i = 0; i < fullBytes.length; i++) {
+                binary += String.fromCharCode(fullBytes[i]);
+            }
+
+            const base64 = btoa(binary)
+                .replace(/\+/g, '-')
+                .replace(/\//g, '_')
+                .replace(/=+$/, '');
+
+            return base64;
+
+        } catch (error) {
+            console.error("Fallback conversion error:", error);
+            return hexAddress;
+        }
+    }
+
+    // Вспомогательный метод для CRC16 (Poly: 0x1021)
+    calculateCRC16(data) {
+        let crc = 0;
+        for (let i = 0; i < data.length; i++) {
+            let x = (crc >> 8) ^ data[i];
+            x ^= x >> 4;
+            crc = ((crc << 8) ^ (x << 12) ^ (x << 5) ^ x) & 0xFFFF;
+        }
+        return crc;
+    }
 
     // Показ HEX адреса (если не удалось конвертировать)
     showHexAddress() {
@@ -155,7 +243,7 @@ export class WalletManager {
             navigator.clipboard.writeText(address)
                 .then(() => {
                     const originalText = copyBtn.textContent;
-                    copyBtn.textContent = '✅ Copied!';
+                    copyBtn.textContent = getTranslation('copied', '✅ Copied!');
                     copyBtn.style.color = '#00D26A';
 
                     setTimeout(() => {
@@ -222,64 +310,6 @@ export class WalletManager {
                     Withdraw TRF
                 `;
             }
-        }
-    }
-
-    // Добавление кнопки обновления баланса
-    addRefreshButton() {
-        const container = document.getElementById("balance-refresh-container");
-        if (!container) return;
-
-        // Удаляем существующую кнопку если есть
-        this.removeRefreshButton();
-
-        const btn = document.createElement("button");
-        btn.id = "refresh-balance-btn";
-        btn.textContent = "🔄 Refresh Balance";
-        btn.className = "refresh-btn";
-        btn.style.display = 'none'; // 🔥 Скрываем по умолчанию
-
-        btn.addEventListener("click", async () => {
-            if (!this.walletAddress) {
-                alert("Please connect wallet first");
-                return;
-            }
-
-            // Имитация загрузки баланса
-            btn.textContent = "🔄 Loading...";
-            btn.disabled = true;
-
-            setTimeout(() => {
-                this.userBalance = this.getMockBalance();
-                this.updateBalanceUI();
-                this.updateWithdrawButton();
-
-                btn.textContent = "🔄 Refresh Balance";
-                btn.disabled = false;
-            }, 1000);
-        });
-
-        container.appendChild(btn);
-    }
-
-    // 🔥 Новый метод: управление видимостью кнопки
-    updateRefreshButtonVisibility(activeTab) {
-        const refreshBtn = document.getElementById("refresh-balance-btn");
-        if (!refreshBtn) return;
-
-        // Показываем кнопку только на вкладке Wallet
-        if (activeTab === 'Wallet') {
-            refreshBtn.style.display = 'block';
-        } else {
-            refreshBtn.style.display = 'none';
-        }
-    }
-
-    // Удаление кнопки обновления баланса
-    removeRefreshButton() {
-        const btn = document.getElementById("refresh-balance-btn");
-        if (btn) {
-            btn.remove();
         }
     }
 
