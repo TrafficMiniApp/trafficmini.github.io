@@ -42,5 +42,7 @@
   "addressLabel": "Your TON Address:",
   "verifyTask": "Verify",
   "doneTask": "Done",
-  "walletDisconnect": "Disconnect Wallet"
+  "walletDisconnect": "Disconnect Wallet",
+  "cancelTask": "Cancel Task",
+  "taskCancelled": "Cancelled"
 }

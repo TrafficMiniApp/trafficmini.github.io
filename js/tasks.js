@@ -167,7 +167,7 @@ export function renderClientTasks() {
                     <a href="${task.link}" target="_blank">${task.link}</a>
                     <span class="task-reward">${task.reward} TRF${getTranslation('perSubscription', '/sub')}</span>
                 </div>
-                ${isCancelled ? '<div style="color: red; margin-bottom: 10px;">Отменено</div>' : ''}
+                ${isCancelled ? `<div style="color: red; margin-bottom: 10px;">${getTranslation('taskCancelled', 'Cancelled')}</div>` : ''}
                 <div class="progress-container">
                     <div class="progress-bar" style="width: ${progress}%"></div>
                     <div class="progress-text">${Math.round(progress)}% ${getTranslation('progressText', 'completed')}</div>
@@ -195,7 +195,7 @@ export function renderClientTasks() {
                         <span class="stat-value">~${estimatedSubs}</span>
                     </div>
                 </div>
-                ${!isCancelled ? `<button class="mini-btn cancel-task-btn" style="width: 100%; margin-top: 15px; background: #6b1010;" onclick="handleCancelTask(${task.id})">Cancel Task</button>` : ''}
+                ${!isCancelled ? `<button class="mini-btn cancel-task-btn" style="width: 100%; margin-top: 15px; background: #6b1010;" onclick="handleCancelTask(${task.id})">${getTranslation('cancelTask', 'Cancel Task')}</button>` : ''}
             </div>
         `;
         container.appendChild(taskEl);

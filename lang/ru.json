@@ -42,5 +42,7 @@
   "addressLabel": "Ваш TON Адрес:",
   "verifyTask": "Проверить",
   "doneTask": "Готово",
-  "walletDisconnect": "Отключить кошелёк"
+  "walletDisconnect": "Отключить кошелёк",
+  "cancelTask": "Отменить задание",
+  "taskCancelled": "Отменено"
 }
