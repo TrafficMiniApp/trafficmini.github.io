@@ -244,7 +244,7 @@ export class WalletManager {
                 .then(() => {
                     const originalText = copyBtn.textContent;
                     copyBtn.textContent = getTranslation('copied', '✅ Copied!');
-                    copyBtn.style.color = '#00D26A';
+                    copyBtn.style.color = '#f77307ff';
 
                     setTimeout(() => {
                         copyBtn.textContent = originalText;
