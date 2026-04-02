@@ -41,5 +41,6 @@
   "copied": "✅ Copied!",
   "addressLabel": "Your TON Address:",
   "verifyTask": "Verify",
-  "doneTask": "Done"
+  "doneTask": "Done",
+  "walletDisconnect": "Disconnect Wallet"
 }

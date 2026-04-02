@@ -65,7 +65,7 @@ export class WalletManager {
 
             // Меняем кнопку подключения на "Отключить"
             if (connectBtn) {
-                connectBtn.innerHTML = '<img src="assets/icons/ton-icon.png" alt=""> Disconnect Wallet';
+                connectBtn.innerHTML = `<img src="assets/icons/ton-icon.png" alt=""> ${getTranslation('walletDisconnect', 'Disconnect Wallet')}`;
                 connectBtn.onclick = () => this.disconnect();
             }
 
@@ -87,7 +87,7 @@ export class WalletManager {
             }
 
             if (connectBtn) {
-                connectBtn.innerHTML = '<img src="assets/icons/ton-icon.png" alt=""> Connect Wallet';
+                connectBtn.innerHTML = `<img src="assets/icons/ton-icon.png" alt=""> ${getTranslation('walletConnect', 'Connect Wallet')}`;
                 connectBtn.onclick = () => this.connect();
             }
 
@@ -298,16 +298,17 @@ export class WalletManager {
         if (withdrawBtn) {
             const isDisabled = this.userBalance < 50 || !this.isWalletConnected;
             withdrawBtn.disabled = isDisabled;
+            const withdrawText = getTranslation('withdraw', 'Withdraw TRF');
 
             if (!isDisabled) {
                 withdrawBtn.innerHTML = `
                     <img src="assets/icons/trf.png" alt=""> 
-                    Withdraw ${this.userBalance.toFixed(2)} TRF
+                    ${withdrawText.replace('TRF', this.userBalance.toFixed(2) + ' TRF')}
                 `;
             } else {
                 withdrawBtn.innerHTML = `
                     <img src="assets/icons/trf.png" alt=""> 
-                    Withdraw TRF
+                    ${withdrawText}
                 `;
             }
         }
