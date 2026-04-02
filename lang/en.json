@@ -36,5 +36,10 @@
   "enterValidBudget": "Enter valid budget",
   "notEnoughFunds": "Not enough funds",
   "perSubscription": "/sub",
-  "yourAddress": "Your address:"
+  "clientWithdrawBtn": "💸 Withdraw",
+  "copyBtn": "📋 Copy",
+  "copied": "✅ Copied!",
+  "addressLabel": "Your TON Address:",
+  "verifyTask": "Verify",
+  "doneTask": "Done"
 }

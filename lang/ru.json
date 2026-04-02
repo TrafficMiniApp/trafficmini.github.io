@@ -36,5 +36,10 @@
   "enterValidBudget": "Введите корректный бюджет",
   "notEnoughFunds": "Недостаточно средств",
   "perSubscription": "/подписка",
-  "yourAddress": "Ваш адрес:"
+  "clientWithdrawBtn": "💸 Вывод",
+  "copyBtn": "📋 Копировать",
+  "copied": "✅ Скопировано!",
+  "addressLabel": "Ваш TON Адрес:",
+  "verifyTask": "Проверить",
+  "doneTask": "Готово"
 }

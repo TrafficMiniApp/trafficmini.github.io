@@ -97,15 +97,36 @@ function renderTasks() {
     availableTasks.forEach(task => {
         const el = document.createElement('div');
         el.className = 'task';
-        el.innerHTML = `
-            <div class="task-info">
-                🗯 <a href="${task.link}" target="_blank">${task.link}</a><br>
-                ${task.reward} TRF
-            </div>
-            <button class="mini-btn" onclick="completeTask(${task.id})">
-                ${getTranslation('completeTask', 'Complete')}
-            </button>
-        `;
+        
+        const infoDiv = document.createElement('div');
+        infoDiv.className = 'task-info';
+        infoDiv.innerHTML = `🗯 <a href="${task.link}" target="_blank">${task.link}</a><br>${task.reward} TRF`;
+        
+        const btn = document.createElement('button');
+        btn.className = 'mini-btn';
+        btn.textContent = getTranslation('completeTask', 'Execute');
+        
+        let state = 'execute';
+        
+        btn.addEventListener('click', () => {
+            if (state === 'execute') {
+                if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openTelegramLink) {
+                    window.Telegram.WebApp.openTelegramLink(task.link);
+                } else {
+                    window.open(task.link, '_blank');
+                }
+                state = 'verify';
+                btn.textContent = getTranslation('verifyTask', 'Verify');
+            } else if (state === 'verify') {
+                if (window.handleVerifySubscription) {
+                    window.handleVerifySubscription(task.id, btn);
+                }
+            }
+        });
+        
+        el.appendChild(infoDiv);
+        el.appendChild(btn);
+        
         container.appendChild(el);
     });
 }
@@ -137,6 +158,7 @@ export function renderClientTasks() {
         const remaining = task.totalBudget - task.spent;
         const estimatedSubs = Math.floor(remaining / task.reward);
         
+        const isCancelled = task.status === 'cancelled';
         const taskEl = document.createElement('div');
         taskEl.className = 'client-task';
         taskEl.innerHTML = `
@@ -145,7 +167,7 @@ export function renderClientTasks() {
                     <a href="${task.link}" target="_blank">${task.link}</a>
                     <span class="task-reward">${task.reward} TRF${getTranslation('perSubscription', '/sub')}</span>
                 </div>
-                
+                ${isCancelled ? '<div style="color: red; margin-bottom: 10px;">Отменено</div>' : ''}
                 <div class="progress-container">
                     <div class="progress-bar" style="width: ${progress}%"></div>
                     <div class="progress-text">${Math.round(progress)}% ${getTranslation('progressText', 'completed')}</div>
@@ -173,6 +195,7 @@ export function renderClientTasks() {
                         <span class="stat-value">~${estimatedSubs}</span>
                     </div>
                 </div>
+                ${!isCancelled ? `<button class="mini-btn cancel-task-btn" style="width: 100%; margin-top: 15px; background: #6b1010;" onclick="handleCancelTask(${task.id})">Cancel Task</button>` : ''}
             </div>
         `;
         container.appendChild(taskEl);
@@ -184,5 +207,45 @@ function updateBalanceUI() {
     if (balanceElement) {
         balanceElement.textContent = window.userBalance.toFixed(2);
     }
+    
+    if (window.walletManager) {
+        window.walletManager.updateWithdrawButton();
+    }
 }
+
+window.handleVerifySubscription = function(taskId, btnElement) {
+    // Mock-запрос на проверку
+    setTimeout(() => {
+        btnElement.textContent = '✅ ' + getTranslation('doneTask', 'Done');
+        btnElement.disabled = true;
+        
+        // Добавляем награду
+        const taskIndex = tasks.findIndex(t => t.id === taskId);
+        if (taskIndex > -1) {
+            const task = tasks[taskIndex];
+            window.userBalance += task.reward;
+            task.spent += task.reward;
+            task.completed += 1;
+            updateBalanceUI();
+        }
+    }, 1000);
+};
+
+window.handleCancelTask = function(taskId) {
+    const taskIndex = tasks.findIndex(t => t.id === taskId);
+    if (taskIndex > -1) {
+        const task = tasks[taskIndex];
+        const remaining = task.totalBudget - task.spent;
+        window.clientBalance += remaining;
+        task.status = 'cancelled';
+        
+        document.getElementById('client-balance').textContent = window.clientBalance.toFixed(2);
+        renderClientTasks();
+    }
+};
+
+window.handleRefund = function() {
+    // Пустая функция-заглушка
+};
+
 window.renderClientTasks = renderClientTasks;
