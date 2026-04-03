@@ -65,7 +65,7 @@ export class WalletManager {
 
             // Меняем кнопку подключения на "Отключить"
             if (connectBtn) {
-                connectBtn.innerHTML = `<img src="assets/icons/ton-icon.png" alt=""> ${getTranslation('walletDisconnect', 'Disconnect Wallet')}`;
+                connectBtn.innerHTML = `<img src="assets/icons/ton-wallet-icon.png" alt=""> ${getTranslation('walletDisconnect', 'Disconnect Wallet')}`;
                 connectBtn.onclick = () => this.disconnect();
             }
 
@@ -87,7 +87,7 @@ export class WalletManager {
             }
 
             if (connectBtn) {
-                connectBtn.innerHTML = `<img src="assets/icons/ton-icon.png" alt=""> ${getTranslation('walletConnect', 'Connect Wallet')}`;
+                connectBtn.innerHTML = `<img src="assets/icons/ton-wallet-icon.png" alt=""> ${getTranslation('walletConnect', 'Connect Wallet')}`;
                 connectBtn.onclick = () => this.connect();
             }
 
